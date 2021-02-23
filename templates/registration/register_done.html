@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br>
+    <h3>회원가입 완료</h3>
+    <br>
+    <span>
+        캘린더 앱 가입을 환영합니다. &ensp;&ensp;&ensp;
+        <input type="button" onclick="location.href='{% url 'login' %}'" value="로그인"/>
+    </span>
+
+
+{% endblock %}

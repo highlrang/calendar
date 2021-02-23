@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" action="{% url 'connection:receiveApply' %}">{% csrf_token %}
+        <input type="hidden" value="{{ p_user }}" name="p_user"/>
+        <input type="hidden" value="{{ p_cate }}" name="p_cate"/>
+
+        <div>
+            {{ p_user }}님과 공유할 카테고리 선택하기
+            <select name="cate">
+                <option value="null">선택안함</option>
+            {% for cate in cate_list %}
+                <option value="{{ cate.c_id }}">{{ cate.c_cate }}</option>
+            {% endfor %}
+            </select>
+        </div>
+
+        <input type="submit" value="친구 수락"/>
+    </form>
+
+{% endblock %}

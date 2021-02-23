@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <br><br>
+    <div style="text-align: center;">
+
+        <div><input type="button" onclick="location.href='{% url 'connection:friendsList' %}'" value="친구 페이지"/></div><br>
+
+
+        <div style="border_bottom: 1px solid black;"></div>
+
+        <div><input type="button" onclick="location.href='{% url 'logout' %}'" value="로그아웃"/></div><br>
+        <div><input type="button" onclick="location.href='{% url 'password_change' %}'" value="비밀번호 변경"/></div><br>
+
+        <div><input type="button" onclick="location.href='{% url 'sign_out' %}'" value="탈퇴하기" /></div>
+    </div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <style type="text/css" media="all and (max-width: 479px)">
+        body {
+            margin: 5px;
+            font-size: 9px;
+
+        }
+    </style>
+    <style>
+        .clickCate {
+            color: yellow;
+            border: 2px solid black;
+        }
+
+        .sche {
+            border-left: 1px solid lightgray;
+            border-bottom: 1px solid lightgray;
+        }
+
+        .scheRed {
+            border-left: 1px solid red;
+            border-bottom: 1px solid red;
+        }
+
+        .scheComplete {
+            text-decoration: line-through;
+        }
+
+        .일 {
+            color: red;
+        }
+
+    </style>
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script>
+        $(function(){
+            let today = new Date();
+            $(".date").each( function(index, item){
+                var m = today.getMonth() + 1;
+                var month = today.getFullYear() + '년 ' + m + '월';
+
+                if( $(".month").text() == month ){
+                    if( $(item).text() == today.getDate() ){
+                        $(item).parent().css("border", "1px solid black");
+                    }
+                }
+            });
+
+
+            $("td").click(function(){
+                $("td").css("border", "none");
+                $(this).css("border", "1px solid black");
+            });
+
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+
+        {% if cal %}
+        <div style="clear: both;">
+            <div style="float: left;">
+                <input type="button" onclick="location.href='{% url 'schedule:getFriendCalendar' %}?month={{ prev_month }}&category={{ category }}&friend={{ partner }}'" value="이전 달"/>
+            </div>
+            <div style="float: right;">
+                <input type="button" onclick="location.href='{% url 'schedule:getFriendCalendar' %}?month={{ next_month }}&category={{ category }}&friend={{ partner }}'" value="다음 달"/>
+            </div>
+        </div>
+
+        <div>
+        {% autoescape off %}
+            {{ cal }}
+        {% endautoescape %}
+        </div>
+
+        {% endif %}
+{% endblock %}

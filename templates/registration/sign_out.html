@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+    <br><br>
+    <h3>탈퇴 확인 페이지</h3>
+    <div>
+        {{ user.username }}님, 캘린더 앱?을 탈퇴하시겠습니까? &ensp;&ensp;
+        <input type="button" value="확인" onclick="location.href='{% url 'sign_out_done' %}'"/>
+    </div>
+
+{% endblock %}

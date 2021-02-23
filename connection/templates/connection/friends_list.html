@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+    <script>
+        $(function(){
+            if("{{ msg }}" != ""){
+                alert("{{ msg }}");
+            }
+
+        });
+
+        function revokeBtn(num){
+            var answer = confirm("친구를 취소하시겠습니까?");
+            if (answer) {
+                location.href = "revoke/" + num + "/";
+            }
+        }
+    </script>
+
+    <div>
+        <input type="button" value="친구 신청" onclick="location.href='{% url 'connection:friendsProposal' %}'"/>
+    </div>
+    <br><br>
+    <div>
+        나에게 온 신청 {% if getProposal %}{{ getProposal|length }}개 {% else %} 없음 {% endif %}
+        <br>
+        <div>
+            {% for i in getProposal %}
+            <form action="{% url 'connection:finalCategory' %}" method="post">{% csrf_token %}
+                {{ i.p_user }}
+                <input type="hidden" value="{{ i.p_user }}" name="partner_name"/>
+                <input type="hidden" value="{{ i.p_cate }}" name="partner_cate"/>
+                <input type="submit" value="수락"/>
+                <input type="button" value="거절" onclick="location.href='{% url 'connection:applyReject' i.p_id %}'"/>
+            </form>
+            {% endfor %}
+        </div>
+    </div>
+    <br><br>
+    {% if object_list %}
+    친구목록
+    <div>
+        {% for object in object_list %}
+
+        <div>
+            {% if object.f_cate != None %}
+            <a href="{% url 'schedule:getFriendCalendar' %}?category={{ object.f_cate }}&friend={{ object.f_partner }}">{{ object.f_partner }} - {{ object.f_cate }}</a>
+            {% else %}
+            {{ object.f_partner }}
+            {% endif %}
+            <input type="button" onclick="revokeBtn({{ object.f_id }})" value="친구 취소"/>
+        </div>
+
+        {% endfor %}
+    </div>
+    {% endif %}
+
+
+
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block style %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.css" integrity="sha256-b88RdwbRJEzRx95nCuuva+hO5ExvXXnpX+78h8DjyOE=" crossorigin="anonymous" />
+    <style type="text/css" media="all and (max-width: 479px)">
+        body { font-size: 10px; }
+    </style>
+{% endblock %}
+{% block script %}
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <!-- Fengyuan Chen's Datepicker -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/datepicker/0.6.5/datepicker.min.js" integrity="sha256-/7FLTdzP6CfC1VBAj/rsp3Rinuuu9leMRGd354hvk0k=" crossorigin="anonymous"></script>
+
+    <script>
+
+    (function (global, factory) {
+      typeof exports === 'object' && typeof module !== 'undefined' ? factory(require('jquery')) :
+      typeof define === 'function' && define.amd ? define(['jquery'], factory) :
+      (factory(global.jQuery));
+    }(this, (function ($) {
+      'use strict';
+
+      $.fn.datepicker.languages['ko-KR'] = {
+        format: 'yyyy. mm. dd',
+        days: ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'],
+        daysShort: ['일', '월', '화', '수', '목', '금', '토'],
+        daysMin: ['일', '월', '화', '수', '목', '금', '토'],
+        months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        monthsShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+        weekStart: 1,
+        yearFirst: true,
+        yearSuffix: '년'
+      };
+    })));
+
+    $("document").ready(function(){
+        document.getElementById("id_s_startDate").value = "{{ date }}";
+        document.getElementById("id_s_endDate").value = "{{ date }}";
+        $("#id_s_startDate").attr("readonly", true);
+        $("#id_s_endDate").attr("readonly", true);
+
+        var sel = document.getElementsByName("s_cate")[0];
+        for(i=0; i<sel.options.length; i++){
+            if( sel.options[i].value == {{ category }}){
+                sel.options[i].selected = true;
+            }
+        }
+    });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <h3>일정 추가 페이지</h3><br>
+
+    <form action="" method="post" style="padding: 3%; border-radius: 10px; border: 1px solid black;">{% csrf_token %}
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_cate.label_tag }}</span>
+            <span>{{ form.s_cate }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_content.label_tag }}</span>
+            <span>{{ form.s_content }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_startDate.label_tag }}</span>
+            <span>{{ form.s_startDate }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_endDate.label_tag }}</span>
+            <span>{{ form.s_endDate }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_busy.label_tag }}</span>
+            <span>{{ form.s_busy }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_red.label_tag }}</span>
+            <span>{{ form.s_red }}</span>
+        </div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">{{ form.s_complete.label_tag }}</span>
+            <span>{{ form.s_complete }}</span>
+        </div>
+
+        <br>
+        <div><input type="submit" value="확인"/></div>
+    </form>
+
+{% endblock %}

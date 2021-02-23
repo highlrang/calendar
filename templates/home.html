@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+    <style type="text/css" media="all and (max-width: 479px)">
+        body {
+            margin : 5px;
+            font-size: 9px;
+        }
+    </style>
+    <style>
+        .clickCate {
+            color: yellow;
+            border: 2px solid black;
+        }
+
+        .sche {
+            border-left: 1px solid lightgray;
+            border-bottom: 1px solid lightgray;
+        }
+
+        .scheRed {
+            border-left: 1px solid red;
+            border-bottom: 1px solid red;
+        }
+
+        .scheComplete {
+            text-decoration: line-through;
+        }
+
+        .일 {
+            color: red;
+        }
+
+    </style>
+
+{% endblock %}
+
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.5.0.js"></script>
+    <script>
+        function btnClick(){
+            if($(".calendar").length){
+                //
+            }else{
+                if("{{ passCateId }}" != ""){
+                    $("#{{ passCateId }}").click();
+                }else{
+                    $(".cate:first").click();
+                }
+            }
+        }
+
+        $(function(){
+            btnClick();
+
+            document.getElementById({{category}}).style.border = '3px solid skyblue';
+            document.getElementById({{category}}).style.borderRadius = '10px';
+
+            let today = new Date();
+            $(".date").each( function(index, item){
+                var m = today.getMonth() + 1;
+                var month = today.getFullYear() + '년 ' + m + '월';
+
+                if( $(".month").text() == month ){
+                    if( $(item).text() == today.getDate() ){
+                        $(item).parent().css("border", "1px solid black");
+                    }
+                }
+            });
+
+
+            $("td").click(function(){
+                $("td").css("border", "none");
+                $(this).css("border", "1px solid black");
+            });
+
+
+        });
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    {% if user.is_active %}
+        {% for i in object_list %}
+            {% if i.c_star == True %} <!-- queryset order by로도 가능 -->
+            <span><input type="button" class="cate" onclick="location.href='{% url 'schedule:getCalendar' %}?category={{ i.c_id }}'" id="{{ i.c_id }}" value="{{ i.c_cate }}" /></span>
+            {% endif %}
+        {% endfor %}
+
+        {% for i in object_list %}
+            {% if i.c_star == False %}
+            <span><input type="button" class="cate" onclick="location.href='{% url 'schedule:getCalendar' %}?category={{ i.c_id }}'" id="{{ i.c_id }}" value="{{ i.c_cate }}" /></span>
+            {% endif %}
+        {% endfor %}
+
+        <br><br>
+
+        {% if cal %}
+        <div style="clear: both;">
+            <div style="float: left;">
+                <input type="button" onclick="location.href='{% url 'schedule:getCalendar' %}?month={{ prev_month }}&category={{ category }}'" value="이전 달"/>
+            </div>
+            <div style="float: right;">
+                <input type="button" onclick="location.href='{% url 'schedule:getCalendar' %}?month={{ next_month }}&category={{ category }}'" value="다음 달"/>
+            </div>
+        </div>
+        {% else %}
+        <p>카테고리를 생성한 후 캘린더를 이용하세요!</p>
+        {% endif %}
+
+        <div>
+        {% autoescape off %}
+            {{ cal }}
+        {% endautoescape %}
+        </div>
+
+    {% else %}
+        <br>
+        <div style="text-align: center;">
+            <p> 로그인 또는 간단한 회원가입으로 앱 사용을 시작해보세요 !</p><br>
+            <div><input type="button" onclick="location.href='{% url 'login' %}'" value="로그인"/></div><br>
+            <div><input type="button" onclick="location.href='{% url 'register' %}'" value="회원가입"/></div><br>
+        </div>
+    {% endif %}
+
+
+{% endblock %}

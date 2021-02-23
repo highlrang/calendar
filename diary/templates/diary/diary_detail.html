@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+    <style type="text/css" media="all and (max-width: 479px)">
+        body { font-size: 11px; }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <h3>일기 상세 페이지</h3>
+    <div style="border-radius: 10px; border: 1px solid black; padding: 3%;">
+        <div>{{ object.d_date }} </div><br>
+        <div>{{ object.d_title }}</div><br>
+        <div>{{ object.d_content|linebreaks }}</div><br>
+    </div>
+
+
+
+{% endblock %}

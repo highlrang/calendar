@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block style %}
+    <style type="text/css" media="all and (max-width: 479px)">
+        body { font-size: 11px; }
+    </style>
+{% endblock %}
+{% block content %}
+    <script>
+        $(function(){
+            if("{{ msg }}" != ""){
+                alert("{{ msg }}");
+            }
+
+        });
+        function checkDelete(id){
+            var answer = confirm("삭제하시겠습니까");
+            if(answer){
+                location.href="/diary/delete/"+id+"/{{ category }}/{{ date }}/";
+            }
+        }
+
+    </script>
+    <br>
+    {{ date }}의 일기 &ensp;&ensp;&ensp;
+    <input type="button" onclick="location.href='{% url 'diary:diaryCreate' cate=category date=date %}'" value="+ 추가"/>
+    <br><br><br>
+
+    {% if day_list %}
+    <div style="border-radius: 10px; border-left: 1px solid black; border-right: 1px solid black; padding: 3%;">
+    {% for i in day_list %}
+        <div>
+            <span style="display: inline-block; width: 40%;"><a href="{{ i.get_absolute_url }}">{{ i.d_title }}</a></span>
+            <span style="display: inline-block; width: 10%;"><input type="button" onclick="checkDelete({{ i.d_id }})" value="삭제"/></span>
+            <span style="display: inline-block; width: 10%;"><input type="button" onclick="location.href='{% url 'diary:diaryUpdate' pk=i.d_id cate=category date=date %}'" value="수정"/></span>
+        </div><br>
+    {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Title</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js"></script>
+    <script>
+        $(function(){
+            $("#homeDiv").click(function(){
+                if("{{ category }}" != ""){
+                    location.href="/{{ category }}/";
+
+                }else{
+                    location.href="/";
+                }
+            });
+        });
+
+
+    </script>
+    {% block style %}<style></style>{% endblock %}
+    {% block script %}<script></script>{% endblock %}
+
+    <link type="text/css" rel="stylesheet" href="{% static 'css/base.css' %}" />
+
+</head>
+<body>
+    <div style="text-align: center;">
+        {% if user.is_active %}
+        <div style="float: right;" id="homeDiv"><img src="{% static 'img/home.png' %}" width="20px" height="20px"/></div>
+        <div style="float: right; margin-right: 2%;" onclick="location.href='{% url 'settings' %}'"><img src="{% static '/img/settings.png' %}" width="20px;" height="20px;"/></div>
+        <div style="float: right; margin-right: 2%;"><input type="button" onclick="location.href='{% url 'schedule:cateList' %}'" value="카테고리 관리"/></div>
+
+        {% else %}
+        <h1 onclick="location.href='{% url 'home' %}'">캘린더 <img src="{% static 'img/home.png' %}" width="25px" height="25px"/> </h1>
+        {% endif %}
+    </div><br>
+
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

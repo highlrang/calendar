@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+    <style type="text/css" media="all and (max-width: 479px)">
+        body { font-size: 11px; }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <h3>일정 상세 페이지</h3>
+    <div style="border-radius: 10px; border: 1px solid black; padding: 3%;">
+        <div>{{ object.s_content }}</div><br>
+        <div>{{ object.s_startDate }} ㅡ {{ object.s_endDate }} </div><br>
+
+        <div>
+            {% if object.s_busy == '0' %}
+
+            {% elif object.s_busy == '1' %}
+            <div><span style="display: inline-block; width: 20%;">중요도</span>★</div><br>
+            {% elif object.s_busy == '2' %}
+            <div><span style="display: inline-block; width: 20%;">중요도</span>★★</div><br>
+            {% elif object.s_busy == '3' %}
+            <div><span style="display: inline-block; width: 20%;">중요도</span>★★★</div><br>
+            {% elif object.s_busy == '4' %}
+            <div><span style="display: inline-block; width: 20%;">중요도</span>★★★★</div><br>
+            {% elif object.s_busy == '5' %}
+            <div><span style="display: inline-block; width: 20%;">중요도</span>★★★★★</div><br>
+            {% endif %}
+        </div>
+        <div>
+            {% if object.s_red == True %}
+            <div>기념일 <img src="{% static 'img/d-day.png' %}" width="20px" height="20px"/></div><br>
+            {% elif object.s_red == False %}
+
+            {% endif %}
+        </div>
+        <div>
+            {% if object.s_complete == True %}
+            완료 일정 <img src="{% static 'img/check.png' %}" width="20px" height="20px"/>
+            {% elif object.s_complete == False %}
+            미완료 일정
+            {% endif %}
+        </div>
+    </div>
+
+
+
+{% endblock %}

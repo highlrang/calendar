@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <div id="cateName" style="font-weight: bold;"></div><br>
+    <script>
+        $(function(){
+            var cate = $("#id_c_cate").val();
+            $("#cateName").text("<" + cate + "> 카테고리 수정 페이지");
+        });
+
+    </script>
+
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <br>
+        <div><input type="submit" value="확인"/></div>
+    </form>
+
+{% endblock %}

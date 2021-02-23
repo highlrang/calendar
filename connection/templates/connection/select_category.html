@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method="post" action="{% url 'connection:friendsApply' %}">{% csrf_token %}
+        <input type="hidden" value="{{ user_name }}" name="user_name"/>
+        <div>{{ user_name }}님께 친구 신청</div>
+        <br><br>
+
+        공개할 카테고리 선택<br>
+        <div>
+            <select name="cate" required>
+                <option value="null">선택안함</option>
+            {% for cate in cate_list %}
+                <option value="{{ cate.c_id }}">{{ cate.c_cate }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <br>
+        <input type="submit" value="친구 신청"/>
+
+    </form>
+
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <script>
+        $(function(){
+            if( "{{ msg }}" != "" ){
+                alert("{{ msg }}");
+            }
+        });
+
+    </script>
+
+    <form method="post" action="{% url 'connection:userSearch' %}">{% csrf_token %}
+        <div>사용자 검색 : <input type="text" name="user_name"/> <input type="submit" value="확인"/></div>
+    </form>
+    <br>
+    {% if search_result %}
+
+    {% if search_result == 'False' %}
+        <div>
+            일치하는 사용자가 없습니다.
+        </div>
+    {% else %}
+        <form method="post" action="{% url 'connection:selectCategory' %}">{% csrf_token %}
+            {{ search_result }}
+            <input type="hidden" name="user_name" value="{{ search_result }}"/>
+            <input type="submit" value="친구 신청"/>
+        </form>
+    {% endif %}
+    {% endif %}
+    <br><br>
+
+    {% if apply_list %}
+    <div>
+        <div>나의 친구 신청 목록</div><br>
+        {% for i in apply_list %}
+            <div>
+                {{ i.p_partner }}님 -
+                {% if i.p_cate %}{{ i.p_cate }} 카테고리 공개{% endif %}
+                &ensp;&ensp;&ensp;
+                상태 : {% if i.p_reject == True %}거절{% else %}수락 대기 중{% endif %}
+                <input type="button" value="신청취소" onclick="location.href='{% url 'connection:proposalRevoke' i.p_id %}'"/>
+
+            </div>
+
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}

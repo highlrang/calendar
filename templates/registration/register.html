@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h3>회원가입 페이지</h3>
+    <br>
+    <div>
+        {% if form.errors %}
+            <p style="border-bottom: 1px solid red; border-top: 1px solid red; padding: 2%;">오류가 발생했습니다. 다시 한 번 시도해주세요.</p>
+        {% endif %}
+    </div>
+    <br>
+
+    <form action="" method="post">{% csrf_token %}
+        <div><span style="display: inline-block; width: 20%;">아이디</span> {{ form.username }}</div><br>
+        <div><span style="display: inline-block; width: 20%;">비밀번호</span> {{ form.password1 }}</div><br>
+        <div>
+            <span style="display: inline-block; width: 20%;">비밀번호 재입력</span> {{ form.password2 }}
+        </div>
+        <div>
+            <input type="submit" value="회원가입"/>
+        </div>
+    </form>
+
+{% endblock %}
