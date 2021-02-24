@@ -4,15 +4,15 @@
 <br><br><br>
 <form action="{% url 'schedule:searchResult' %}" method="post">{% csrf_token %}
     <div>캘린더 검색</div>
-    <div>검색 단어 : <input type="text" name="search_word" required/> <input type="submit" value="검색"/></div>
+    <div>검색 단어 : <input type="text" style="width: 40%" name="search_word" required/> <input type="submit" value="검색"/></div>
 </form>
 
     <br><br>
     {% if sche_list %}
     {% if sche_list == 'None' %}
-        <div>일정 달력에서의 <{{ search }}> 검색 결과 없음</div>
+        <div style="font-weight: bold;">일정 달력에서의 <{{ search }}> 검색 결과 없음</div>
     {% else %}
-        <div>일정 달력에서의 <{{ search }}> 검색 결과</div><br>
+        <div style="font-weight: bold;">일정 달력에서의 <{{ search }}> 검색 결과</div><br>
         {% for sche in sche_list %}
         <div><a href="{{ sche.get_absolute_url }}">{{ sche.s_cate.c_cate }} - {{ sche.s_content }} - {{ sche.s_startDate }}</a></div>
         {% endfor %}
@@ -23,9 +23,9 @@
 
     {% if diary_list %}
     {% if diary_list == 'None' %}
-    <div>일기 달력에서의 <{{ search }}> 검색 결과 없음</div>
+        <div style="font-weight: bold;">일기 달력에서의 <{{ search }}> 검색 결과 없음</div>
     {% else %}
-        <div>일기 달력에서의 <{{ search }}> 검색 결과</div><br>
+        <div style="font-weight: bold;">일기 달력에서의 <{{ search }}> 검색 결과</div><br>
         {% for diary in diary_list %}
         <div><a href="{{ diary.get_absolute_url }}">{{ diary.d_cate.c_cate }} - {{ diary.d_title }} -
             {{ diary.d_date }}</a></div>
