@@ -18,4 +18,7 @@ urlpatterns = [
     path('update/<int:pk>/<int:cate>/<str:date>/', ScheduleUV.as_view(), name='scheUpdate'),
     path('delete/<int:pk>/<int:cate>/<str:date>/', ScheduleDel, name='scheDelete'),
 
+    path('search/', SearchCalendar.as_view(), name='searchCalendar'),
+    path('search/result/', SearchResult, name='searchResult'),
+
 ]

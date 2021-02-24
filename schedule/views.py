@@ -346,3 +346,20 @@ def ScheduleDel(request, pk, cate, date):
 
 
 
+
+class SearchCalendar(TemplateView):
+    template_name = 'schedule/search_calendar.html'
+
+def SearchResult(request):
+    if request.POST:
+        search = request.POST['search_word']    # get absolute url && cate && title && date
+        try:
+            sche_list = Schedule.objects.filter(s_user = request.user, s_content__contains = search)
+        except Schedule.DoesNotExist:
+            sche_list = 'None'
+        try:
+            diary_list = Diary.objects.filter(Q(d_user = request.user), Q(d_title__contains = search) | Q(d_content__contains = search))
+        except Diary.DoesNotExist:
+            diary_list = 'None'
+
+        return render(request, 'schedule/search_calendar.html', {'search':search, 'sche_list':sche_list, 'diary_list':diary_list})
