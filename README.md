@@ -6,10 +6,8 @@
 ---------------------------------------
 
 ## models.py
-https://github.com/highlrang/calendar/blob/master/schedule/models.py
 
 + 달력의 종류를 구분하는 Category 모델과 각 달력에 종속되어 추가되는 일정들을 관리하는 Schedule 모델 생성
-
 
 ```python
 class Category(models.Model):
@@ -57,9 +55,10 @@ class Schedule(models.Model):
     def get_absolute_url(self):
         return reverse('schedule:scheDetail', args=[self.s_id])
 ```
+
 ----------------------------------------
+
 ## urls.py
-https://github.com/highlrang/calendar/blob/master/schedule/urls.py
 
 ```python
 from django.urls import path, include
@@ -93,11 +92,11 @@ urlpatterns = [
 ```
 
 
-----------------------------------------
-## views.py
-https://github.com/highlrang/calendar/blob/master/schedule/views.py
+---------------------------------------
 
-1. 캘린더 호출 코드 - HTMLCalendar 재정의하는 코드는 인터넷을 참고하였고, 모델을 다루는 부분은 전부 새로 
+## views.py
+
+1. 캘린더 호출 코드 (HTMLCalendar 모듈 재정의 코드는 http://hufsglobal.likelion.org/7th-session/vacation-session2을 참고)
 
 ```python
 
@@ -114,17 +113,17 @@ class Calendar(HTMLCalendar):
 
         if day != 0:
             date = datetime.date(self.year, self.month, day)
-# Q조건문을 활용하여 해당하는 일정 데이터가 존재한다면, 중요도를 다루는 필드를 기준으로 내림차순하여 변수에 담는다.
+            # Q조건문을 활용하여 해당하는 일정 데이터가 존재한다면, 중요도를 다루는 필드를 기준으로 내림차순하여 변수에 담는다.
             todo_list = Schedule.objects.filter(Q(s_cate=self.category), Q(s_startDate=date) | Q(s_endDate=date) | Q(s_startDate__lt=date) & Q(s_endDate__gt=date)).order_by('-s_busy')
 
         d = ''
         if todo_list:
-# 일정 개수 자르기
+            # 일정 개수 3개에서 자르기 
             if len(todo_list) > 3:
                 for i in range(0, 3):
-# 기념일 확인
+                    # 기념일 확인
                     if todo_list[i].s_red == True:
-# 완료여부 확인
+                        # 완료 여부 확인
                         if todo_list[i].s_complete == True:
                             d += f"<li class='scheRed scheComplete'>"
                         else:
@@ -135,7 +134,7 @@ class Calendar(HTMLCalendar):
                         else:
                             d += f"<li class='sche'>"
 
-# 일정 글자수 자르기
+                    # 일정내용의 글자수 자르기
                     if len(todo_list[i].s_content) > 4:
                         d += f"{todo_list[i].s_content[:4]}</li><br>"
                     else:
@@ -143,9 +142,9 @@ class Calendar(HTMLCalendar):
 
             else:
                 for todo in todo_list:
-# 기념일 확인
+                    # 기념일 확인
                     if todo.s_red == True:
-# 완료여부 확인
+                        # 완료여부 확인
                         if todo.s_complete == True:
                             d += f"<li class='scheRed scheComplete'>"
                         else:
@@ -156,14 +155,14 @@ class Calendar(HTMLCalendar):
                         else:
                             d += f"<li class='sche'>"
 
-# 일정 글자수 자르기
+                    # 일정 내용의 글자수 자르기
                     if len(todo.s_content) > 4:
                         d += f"{todo.s_content[:4]}</li><br>"
                     else:
                         d += f"{todo.s_content}</li><br>"
 
         if day != 0:
-# 각 날짜에 date archive 페이지로 가는 url담기 + 각 날짜에 해당하는 일정들 담기
+            # 각 날짜에 date archive 페이지로 가는 url담기 + 각 날짜에 해당하는 일정들 담기
             return f"<td style='text-align: center; vertical-align: top;' ondblclick='location.href=\"/schedule/{self.category}/{date}/\"'><span class='date'>{day}</span><br><ul>{d}</ul></td>"
         return "<td></td>"
 
@@ -219,17 +218,17 @@ def getCalendar(request):
     next = next_month(today)
 
     category = request.GET.get('category')
-# 다이어리 여부 확인
+    # 다이어리 여부 확인
     if Category.objects.get(c_id=category).c_diary == True:
         htmlCalendar = Dalendar(today.year, today.month, category)
     else:
-# Calendar 클래스 호출해서 전달할 달력 생성 - 요청한 년도, 월에 해당하는 일정들이 담겨져 전달됨
+        # Calendar 클래스 호출해서 전달할 달력 생성 - 요청한 년도, 월에 해당하는 일정들이 담겨져 전달됨
         htmlCalendar = Calendar(today.year, today.month, category)
 
     htmlCalendar.setfirstweekday(calendar.SUNDAY)
     cal = htmlCalendar.formatmonth(withyear=True)
 
-# 사용자의 카테고리 리스트 전달 
+    # 사용자의 카테고리 리스트 전달 
     allCate = Category.objects.filter(c_user=request.user)
 
     context = {'cal': cal, 'prev_month': prev, 'next_month': next, 'category':category, 'object_list':allCate}
@@ -237,15 +236,11 @@ def getCalendar(request):
 ```
 
 
-
 ---------------------------------------------------------------------------------------------------------------------------------------
 
-
-
 2. 일정 호출 코드
+
 ```python
-
-
 # day archive 뷰 - 날짜가 start와 end 사이에 걸려있는 일정이 있어 generic 클래스형 뷰가 아닌 def 함수로 선택
 # Q 조건문과 ORM 필드 값에 대한 option을 이용하여 요청받은 날짜에 속해있는 일정들을 반환
 
@@ -254,21 +249,19 @@ def Schedule_date(request, cate, date):
     return render(request, 'schedule/sche_day_list.html', {'day_list':day_list, 'date':date, 'category': cate})
 
 
-
-
 # 일정 CreateView 간단히 살펴보기
 # 친구 달력도 볼 수 있기 때문에 CreateView, UpdateView, delete의 경우 소유자가 아니면 접근할 수 없게 설정
 # 아래의 CreateView에서는 OwnerCategoryCheck함수 사용(https://github.com/highlrang/calendar/blob/master/mysite/views.py)에 코드 있음
 
 class ScheduleCV(OwnerCategoryCheck, CreateView):
     model = Schedule
-# 전용 form 생성 (https://github.com/highlrang/calendar/blob/master/schedule/forms.py)
+    # 전용 form 생성 (https://github.com/highlrang/calendar/blob/master/schedule/forms.py)
     form_class = ScheduleForm          
-# 사용자에게 보여질 template
+    # 사용자에게 보여질 template
     template_name = 'schedule/sche_create.html'                                                       
 
 
-# context 변수 - 카테고리와 날짜 정보 전달
+    # context 변수 - 카테고리와 날짜 정보 전달
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.kwargs['cate']                                                     
@@ -276,7 +269,7 @@ class ScheduleCV(OwnerCategoryCheck, CreateView):
         return context
 
 
-# 데이터 생성하기 전에 빈 값으로 설정된 일정 소유자(s_user) 지정한 후 저장
+    # 데이터 생성하기 전에 빈 값으로 설정된 일정 소유자(s_user) 지정한 후 저장
     def form_valid(self, form):                                                                        
         form.save(commit=False)
         form.instance.s_user = self.request.user
@@ -292,7 +285,6 @@ class ScheduleCV(OwnerCategoryCheck, CreateView):
 ## templates
 
 1. 홈페이지
-https://github.com/highlrang/calendar/blob/master/templates/home.html
 
 ```html
 {% extends 'base.html' %}
@@ -300,8 +292,7 @@ https://github.com/highlrang/calendar/blob/master/templates/home.html
 {% block content %}
     {% if user.is_active %}
 
-# 카테고리 즐겨찾기 되어 있는 것을 앞에 위치시킴 - object_list가 카테고리 리스트
-
+        /* 카테고리 즐겨찾기 되어 있는 것을 앞에 위치시킴 - object_list가 카테고리 리스트 */
         {% for i in object_list %}
             {% if i.c_star == True %} <!-- queryset order by로도 가능 -->
             <span><input type="button" class="cate" onclick="location.href='{% url 'schedule:getCalendar' %}?category={{ i.c_id }}'" id="{{ i.c_id }}" value="{{ i.c_cate }}" /></span>
@@ -319,7 +310,7 @@ https://github.com/highlrang/calendar/blob/master/templates/home.html
         <div style="clear: both;">
             <div style="float: left;">
             
-# 이전달, 다음달 전달받은 변수를 담아서 해당 년월에 해당하는 달력 호출하는(getCalendar) url 생성
+                /* 이전달, 다음달 전달받은 변수를 담아서 해당 년월에 해당하는 달력 호출하는(getCalendar) url 생성 */
                 <input type="button" onclick="location.href='{% url 'schedule:getCalendar' %}?month={{ prev_month }}&category={{ category }}'" value="이전 달"/>
             </div>
             <div style="float: right;">
@@ -327,19 +318,20 @@ https://github.com/highlrang/calendar/blob/master/templates/home.html
             </div>
         </div>
         {% else %}
-# 카테고리가 없을 경우
+        
+        /* 카테고리가 없을 경우 */
         <p>카테고리를 생성한 후 캘린더를 이용하세요!</p>
         {% endif %}
 
         <div>
         {% autoescape off %}
-# 달력
+              /* 카테고리에 해당하는 달력 */
               {{ cal }}
         {% endautoescape %}
         </div>
 
     {% else %}
-# 로그인이 안 되어 있을 겨웅
+    /* 로그인이 안 되어 있을 경우 */
     <br>
         <div style="text-align: center;">
             <p> 로그인 또는 간단한 회원가입으로 앱 사용을 시작해보세요 !</p><br>
@@ -360,20 +352,18 @@ https://github.com/highlrang/calendar/blob/master/templates/home.html
 
 
 2. 각 날짜에 속해있는 일정들 리스트를 반환하는 template (day_archive_view)
-https://github.com/highlrang/calendar/blob/master/schedule/templates/schedule/sche_day_list.html
-
 
 ```python
 {% extends 'base.html' %}
 {% block content %}
     <script>
-# 삭제 기능 시 전달받은 메세지 파라미터를 alert로 화면에 띄우기
+    /* 삭제 기능 시 전달받은 메세지 파라미터를 alert로 화면에 띄우기 */
         $(function(){
             if ("{{ msg }}" != ""):
                 alert("{{ msg }}");
         });
 
-# 삭제 버튼 클릭 시 한 번 더 확인하고 url 이동
+        /*  삭제 버튼 클릭 시 한 번 더 확인하고 url 이동 */
         function checkDelete(id){
             var answer = confirm("삭제하시겠습니까");
             if(answer){
@@ -385,20 +375,20 @@ https://github.com/highlrang/calendar/blob/master/schedule/templates/schedule/sc
     <br>
     
       {{ date }}의 일정 &ensp;&ensp;&ensp;
- # 일정 추가 url
+      /* 일정 추가 url */
       <input type="button" onclick="location.href='{% url 'schedule:scheCreate' cate=category date=date %}'" value="+ 추가"/>
       <br><br><br>
 
       {% if day_list %}
       <div style="border-radius: 10px; border-left: 1px solid black; border-right: 1px solid black; padding: 3%;">
-# 해당 날짜의 각 일정들 for문으로 출력
+       /* 해당 날짜의 각 일정들 for문으로 출력 */
        {% for i in day_list %}
           <div>
-# detail view로 이동하는 url - get_absolute_url 이용
+               /* detail view로 이동하는 url - get_absolute_url 이용 */
               <span style="display: inline-block; width: 40%;"><a href="{{ i.get_absolute_url }}">{{ i.s_content }}</a></span>
-# 삭제는 html 버튼 클릭 시 javascript 함수로 이동하여 url 이동하는 구조
+               /* 삭제는 html 버튼 클릭 시 javascript 함수로 이동하여 url 이동하는 구조 */
               <span style="display: inline-block; width: 10%;"><input type="button" onclick="checkDelete({{ i.s_id }})" value="삭제"/></span>
-# 일정 update view로 이동하는 url - get 방식으로 필요한 파라미터 전달
+               /* 일정 update view로 이동하는 url - get 방식으로 필요한 파라미터 전달 */
               <span style="display: inline-block; width: 10%;"><input type="button" onclick="location.href='{% url 'schedule:scheUpdate' pk=i.s_id cate=category date=date %}'" value="수정"/></span>
           </div><br>
       {% endfor %}
