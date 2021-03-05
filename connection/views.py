@@ -45,38 +45,33 @@ def Final_category(request):
         category_list = Category.objects.filter(c_user=request.user)
         return render(request, 'connection/final_category.html', {'cate_list': category_list, 'p_user':partner_name, 'p_cate': partner_cate})
 
+
+
 def Receive_apply(request):
     if request.POST:
         myCate = request.POST['cate']
         if myCate != 'null':
             myCate = Category.objects.get(c_id = myCate)
+
         partnerName = User.objects.get(username=request.POST['p_user'])
         yourCate = request.POST['p_cate']
         if yourCate != 'None':
             yourCate = Category.objects.get(c_user = partnerName, c_cate = yourCate)
 
 
-        # Friends가 없을 경우에 추가
+        # Friends가 있는지 확인 - 없을 경우에만 추가
         if yourCate != 'None':
             try:
                 Friends.objects.get(f_user=request.user, f_partner=partnerName, f_cate=yourCate)
                 msg = '이미 친구 상태입니다.'
+
             except Friends.DoesNotExist:
                 Friends.objects.create(f_user=request.user, f_partner=partnerName, f_cate=yourCate)
                 msg = '친구 수락되었습니다.'
         else:
             try:
-                friend = Friends.objects.filter(f_user=request.user, f_partner=partnerName)
+                Friends.objects.get(f_user=request.user, f_partner=partnerName, f_cate__isnull=True)
                 msg = '이미 친구 상태입니다.'
-
-                have = False
-                for f in friend:
-                    if f.f_cate is None:
-                        have = True
-
-                if have == False:
-                    Friends.objects.create(f_user=request.user, f_partner=partnerName)
-                    msg = '친구 수락되었습니다.'
 
             except Friends.DoesNotExist:
                 Friends.objects.create(f_user=request.user, f_partner=partnerName)
@@ -93,17 +88,8 @@ def Receive_apply(request):
 
         else:
             try:
-                friend = Friends.objects.filter(f_user=partnerName, f_partner=request.user)
+                Friends.objects.get(f_user=partnerName, f_partner=request.user, f_cate__isnull=True)
                 msg = '이미 친구 상태입니다.'
-
-                have = False
-                for f in friend:
-                    if f.f_cate is None:
-                        have = True
-
-                if have == False:
-                    Friends.objects.create(f_user=partnerName, f_partner=request.user)
-                    msg = '친구 수락되었습니다.'
 
             except Friends.DoesNotExist:
                 Friends.objects.create(f_user=partnerName, f_partner=request.user)
@@ -113,10 +99,8 @@ def Receive_apply(request):
 
         # Proposal 삭제
         if yourCate == 'None':
-            proposal = Proposal.objects.filter(p_user=partnerName, p_partner=request.user)
-            for p in proposal:
-                if p.p_cate is None:
-                    p.delete()
+            proposal = Proposal.objects.get(p_user=partnerName, p_partner=request.user, p_cate__isnull=True)
+            proposal.delete()
         else:
             proposal = Proposal.objects.get(p_user=partnerName, p_partner=request.user, p_cate=yourCate)
             proposal.delete()
@@ -124,7 +108,7 @@ def Receive_apply(request):
 
         # context data
         try:
-            proposal = Proposal.objects.filter(p_partner = request.user, p_reject = False)
+            proposal = Proposal.objects.get(p_partner = request.user, p_reject = False)
         except Proposal.DoesNotExist:
             proposal = ''
 
@@ -164,16 +148,8 @@ def Friends_apply(request):
         user = User.objects.get(username=request.POST['user_name'])
         if request.POST['cate'] == 'null':
             try:
-                proposal = Proposal.objects.filter(p_user=request.user, p_partner=user.pk)
-                have = False
-                for p in proposal:
-                    if p.p_cate is None:
-                        have = True
-                if have == True:
-                    msg = str(user) + ' 님은 이미 친구 신청되어 있습니다.'
-                else:
-                    Proposal.objects.create(p_user=request.user, p_partner=user)
-                    msg = str(user) + ' 님에게 친구 신청하였습니다.'
+                Proposal.objects.get(p_user=request.user, p_partner=user.pk, p_cate__isnull=True)
+                msg = str(user) + ' 님은 이미 친구 신청되어 있습니다.'
 
             except Proposal.DoesNotExist:
                 Proposal.objects.create(p_user=request.user, p_partner=user)
@@ -206,3 +182,4 @@ def Proposal_revoke(request, pk):
     proposal = Proposal.objects.get(p_id=pk)
     proposal.delete()
     return redirect(reverse('connection:friendsProposal'))
+
