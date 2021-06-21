@@ -101,68 +101,56 @@ urlpatterns = [
 ```python
 
  # HTMLCalendar를 재정의 >> Category를 넘겨받아 해당 카테고리의 일정들을 날짜에 맞춰 삽입
-class Calendar(HTMLCalendar):                                                          
+class Calendar(HTMLCalendar):
     def __init__(self, year=None, month=None, category=None):
         self.year = year
         self.month = month
         self.category = category
         super(Calendar, self).__init__()
 
+    def add_red(s_red, d):
+        if s_red:
+            d += 'scheRed'
+        else:
+            d += 'sche'
+        return d
+
+    def add_complete(s_complete, d):
+        if s_complete:
+            d += " scheComplete'>"
+        else:
+            d += "'>"
+        return d
+
+    def cutting(todo, d):
+        if len(todo.s_content) >= 4:
+            d += todo.s_content[:4]
+        else:
+            d += todo.s_content
+
     def formatday(self, day):
         todo_list = ''
 
         if day != 0:
+            #print(self.year, self.month, day)
             date = datetime.date(self.year, self.month, day)
-            # Q조건문을 활용하여 해당하는 일정 데이터가 존재한다면, 중요도를 다루는 필드를 기준으로 내림차순하여 변수에 담는다.
             todo_list = Schedule.objects.filter(Q(s_cate=self.category), Q(s_startDate=date) | Q(s_endDate=date) | Q(s_startDate__lt=date) & Q(s_endDate__gt=date)).order_by('-s_busy')
 
         d = ''
-        if todo_list:
-            # 일정 개수 3개에서 자르기 
-            if len(todo_list) > 3:
-                for i in range(0, 3):
-                    # 기념일 확인
-                    if todo_list[i].s_red == True:
-                        # 완료 여부 확인
-                        if todo_list[i].s_complete == True:
-                            d += f"<li class='scheRed scheComplete'>"
-                        else:
-                            d += f"<li class='scheRed'>"
-                    else:
-                        if todo_list[i].s_complete == True:
-                            d += f"<li class='sche scheComplete'>"
-                        else:
-                            d += f"<li class='sche'>"
+        for i in range(0, 3):
+            if i == len(todo_list):
+                break
 
-                    # 일정내용의 글자수 자르기
-                    if len(todo_list[i].s_content) > 4:
-                        d += f"{todo_list[i].s_content[:4]}</li><br>"
-                    else:
-                        d += f"{todo_list[i].s_content}</li><br>"
+            todo = todo_list[i]
+            d += "<li class='"
 
-            else:
-                for todo in todo_list:
-                    # 기념일 확인
-                    if todo.s_red == True:
-                        # 완료여부 확인
-                        if todo.s_complete == True:
-                            d += f"<li class='scheRed scheComplete'>"
-                        else:
-                            d += f"<li class='scheRed'>"
-                    else:
-                        if todo.s_complete == True:
-                            d += f"<li class='sche scheComplete'>"
-                        else:
-                            d += f"<li class='sche'>"
+            d += self.add_red(todo.s_red, d)
+            d += self.add_complete(todo.s_complete, d)
+            d += self.cutting(todo, d)
 
-                    # 일정 내용의 글자수 자르기
-                    if len(todo.s_content) > 4:
-                        d += f"{todo.s_content[:4]}</li><br>"
-                    else:
-                        d += f"{todo.s_content}</li><br>"
+            d+= "</li><br>"
 
         if day != 0:
-            # 각 날짜에 date archive 페이지로 가는 url담기 + 각 날짜에 해당하는 일정들 담기
             return f"<td style='text-align: center; vertical-align: top;' ondblclick='location.href=\"/schedule/{self.category}/{date}/\"'><span class='date'>{day}</span><br><ul>{d}</ul></td>"
         return "<td></td>"
 
